@@ -14,10 +14,10 @@ class Loop:
         self.last_image = None
 
     def run(self):
-        if self.username is None:
+        scraper = Scraper(self.username)
+        if scraper.status != 200:
             return
 
-        scraper = Scraper(self.username)
         post = scraper.get_last_post()
         user = scraper.get_user()
 

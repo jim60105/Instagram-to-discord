@@ -8,7 +8,9 @@ from src.instagram.user import User
 class Scraper:
     def __init__(self, username: str):
         res = self.__get_instagram_feed(username)
-        self.json = res.json()['graphql']
+        self.status = res.status_code
+        if self.status == 200:
+            self.json = res.json()['graphql']
 
     @staticmethod
     def __get_instagram_feed(username: str) -> requests.Response:
@@ -18,9 +20,7 @@ class Scraper:
                           'Safari/537.11 '
         }
 
-        res = requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
-        print(res.status_code)
-        return res
+        return requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
 
     def get_last_post(self) -> Post:
         return self.get_post(0)
