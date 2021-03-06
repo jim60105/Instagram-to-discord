@@ -11,9 +11,12 @@ class Loop:
     def __init__(self, config: Config, username):
         self.webhook = Webhook(config.webhook_url)
         self.username = username
-        self.last_image = 0
+        self.last_image = None
 
     def run(self):
+        if self.username is None:
+            return
+
         scraper = Scraper(self.username)
         post = scraper.get_last_post()
         user = scraper.get_user()

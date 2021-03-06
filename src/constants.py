@@ -1,2 +1,2 @@
 INSTAGRAM_URL = "https://www.instagram.com/"
-DELAY = 600
+DELAY = 30000
