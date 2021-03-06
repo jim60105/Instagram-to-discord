@@ -16,7 +16,7 @@ class Loop:
     def run(self):
         scraper = Scraper(self.username)
         if scraper.status != 200:
-            print("Got invalid response code: " + scraper.status)
+            print(f"Got invalid response code: {scraper.status}")
             return
 
         post = scraper.get_last_post()
