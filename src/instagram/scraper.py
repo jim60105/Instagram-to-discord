@@ -18,7 +18,9 @@ class Scraper:
                           'Safari/537.11 '
         }
 
-        return requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
+        res = requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
+        print(res.status_code)
+        return res
 
     def get_last_post(self) -> Post:
         return self.get_post(0)
