@@ -15,3 +15,8 @@ class Config:
     @property
     def users(self) -> List[str]:
         return self.data['users']
+
+    @property
+    def delay(self) -> int:
+        return self.data['delay']
+

@@ -1,7 +1,6 @@
 import time
 
 from src.config import Config
-from src.constants import DELAY
 from src.loop import Loop
 
 if __name__ == "__main__":
@@ -11,4 +10,4 @@ if __name__ == "__main__":
     while True:
         for user in users:
             user.run()
-        time.sleep(DELAY)
+        time.sleep(config.delay)

@@ -1,3 +1,7 @@
 .idea
 start.sh
 config.yml
+venv
+
+*.pyc
+*.pyo
