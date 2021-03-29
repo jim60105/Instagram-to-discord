@@ -7,7 +7,10 @@ class Post:
 
     @property
     def caption(self) -> str:
-        return self.json['edge_media_to_caption']['edges'][0]['node']['text']
+        edges = self.json['edge_media_to_caption']['edges']
+        if len(edges):
+            return edges[0]['node']['text']
+        return ""
 
     @property
     def image_url(self):
