@@ -6,12 +6,13 @@ from src.instagram.post import Post
 from src.instagram.scraper import Scraper
 from src.instagram.user import User
 
+from pathlib import Path
 
 class Loop:
-    def __init__(self, config: Config, username):
+    def __init__(self, config: Config, username, last_image):
         self.webhook = Webhook(config.webhook_url)
         self.username = username
-        self.last_image = None
+        self.last_image = last_image
 
     def run(self):
         scraper = Scraper(self.username)
@@ -24,6 +25,9 @@ class Loop:
 
         if post.id == self.last_image:
             return
+        
+        with open(Path(__file__).resolve().parent.parent / 'last_image', 'w') as f:
+            f.write(post.id)
 
         embed = self.__create_embed(post, user)
         print(f'New post found\n{user.name} : {post.id}')
