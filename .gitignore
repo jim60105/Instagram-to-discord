@@ -2,7 +2,7 @@
 start.sh
 config.yml
 venv
-last_image
+last_image_*
 
 *.pyc
 *.pyo

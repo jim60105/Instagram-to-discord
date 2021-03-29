@@ -25,8 +25,8 @@ class Loop:
 
         if post.id == self.last_image:
             return
-        
-        with open(Path(__file__).resolve().parent.parent / 'last_image', 'w') as f:
+
+        with open(Path(__file__).resolve().parent.parent / ('last_image_'+self.username), 'w') as f:
             f.write(post.id)
 
         embed = self.__create_embed(post, user)
