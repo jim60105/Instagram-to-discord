@@ -1,3 +1,4 @@
 ---
 webhook_url: ''
 users: ['']
+delay: 600
