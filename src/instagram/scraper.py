@@ -10,6 +10,9 @@ class Scraper:
         res = self.__get_instagram_feed(username)
         self.status = res.status_code
         if self.status == 200:
+            if res.text.startswith("<!DOCTYPE html>"):
+                self.status = 401
+                return
             self.json = res.json()['graphql']
 
     @staticmethod
@@ -31,5 +34,3 @@ class Scraper:
 
     def get_user(self) -> User:
         return User(self.json['user'])
-
-
