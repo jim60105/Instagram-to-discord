@@ -22,8 +22,10 @@ class Scraper:
             'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 '
                           'Safari/537.11 '
         }
-
-        return requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
+        try:
+            return requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
+        except requests.exceptions.ConnectionError:
+            return Scraper.__get_instagram_feed(username)
 
     def get_last_post(self) -> Post:
         return self.get_post(0)
