@@ -1,4 +1,5 @@
 import requests
+import time
 
 from src.constants import INSTAGRAM_URL
 from src.instagram.post import Post
@@ -25,6 +26,7 @@ class Scraper:
         try:
             return requests.get(INSTAGRAM_URL + username + '/feed/?__a=1', headers=headers)
         except requests.exceptions.ConnectionError:
+            time.sleep(10)
             return Scraper.__get_instagram_feed(username)
 
     def get_last_post(self) -> Post:
