@@ -2,3 +2,5 @@
 webhook_url: ''
 users: ['']
 delay: 600
+login_username: ''
+login_password: ''

@@ -1,7 +1,7 @@
-from typing import List
-
 import yaml
+from typing import List
 from pathlib import Path
+
 
 class Config:
     def __init__(self):
@@ -20,3 +20,10 @@ class Config:
     def delay(self) -> int:
         return self.data['delay']
 
+    @property
+    def login_username(self) -> str:
+        return self.data['login_username']
+
+    @property
+    def login_password(self) -> str:
+        return self.data['login_password']
