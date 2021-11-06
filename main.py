@@ -1,5 +1,7 @@
 import time
 
+from dhooks.client import Webhook
+
 from src.config import Config
 from src.loop import Loop
 
@@ -7,6 +9,10 @@ from pathlib import Path
 
 if __name__ == "__main__":
     config = Config()
+
+    if len(config.users) == 0 or not config.webhook_url:
+        print('Please set the config file properly!')
+        exit()
 
     users = []
     for u in config.users:
@@ -27,4 +33,4 @@ if __name__ == "__main__":
     while True:
         for user in users:
             user.run()
-        time.sleep(config.delay)
+        time.sleep(config.delay or 600)

@@ -14,9 +14,10 @@ class Scraper:
     def __init__(self, username: str, login_username: str, login_password: str):
 
         self.is_login = L.test_login() is not None
-        if login_username and login_password and self.is_login is None:
+        if login_username and login_password and not self.is_login:
             try:
                 L.login(login_username, login_password)
+                print(f'Login as {login_username}')
             finally:
                 self.is_login = L.test_login() is not None
 
