@@ -19,25 +19,19 @@ This script executes 2 actions:
 
 ## Usage
 
-Install the dependencies
+- Copy over the config.example.yml
 
-```shell
-python3 -m pip install -r requirements.txt
-```
+    ```shell
+    cp config.example.yml config.yml
+    ```
 
-Copy over the config.example.yml
+- Fill out config.yml
 
-```shell
-cp config.example.yml config.yml
-```
+- Docker Compose up
 
-Fill out config.yml
-
-Run the script
-
-```shell
-python3 main.py
-```
+    ```shell
+    docker-compose up -d
+    ```
 
 ## Collaborations
 
