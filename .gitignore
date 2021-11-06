@@ -2,7 +2,6 @@
 start.sh
 config.yml
 venv
-last_*
 
 *.pyc
 *.pyo

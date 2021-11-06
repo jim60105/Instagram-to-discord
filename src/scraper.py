@@ -12,13 +12,15 @@ class Scraper:
     is_login: bool = 0
 
     def __init__(self, username: str, login_username: str, login_password: str):
-
-        self.is_login = L.test_login() is not None
-        if login_username and login_password and not self.is_login:
+        if login_username and login_password:
             try:
+                self.is_login = L.test_login() is not None
+            except instaloader.LoginRequiredException:
+                self.is_login = 0
+
+            if not self.is_login:
                 L.login(login_username, login_password)
                 print(f'Login as {login_username}')
-            finally:
                 self.is_login = L.test_login() is not None
 
         self.profile = self.__get_profile(username)

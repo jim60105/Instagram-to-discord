@@ -1,8 +1,8 @@
+import os
 from types import NoneType
 from dhooks import Webhook, Embed
 from instaloader import Post
 from instaloader.structures import StoryItem
-from pathlib import Path
 
 from src.config import Config
 from src.scraper import Scraper
@@ -25,9 +25,6 @@ class Loop:
         # Post
         post = scraper.get_last_post()
         if post is not None and str(post.mediaid) != str(self.last_image):
-            with open(Path(__file__).resolve().parent.parent / ('last_image_'+self.username), 'w') as f:
-                f.write(str(post.mediaid))
-
             profile = post.owner_profile
             embed = self.__create_embed(post)
             print(f'New post found\n{profile.username} : {post.mediaid}')
@@ -35,21 +32,23 @@ class Loop:
                               embed,
                               avatar_url=profile.profile_pic_url)
             self.last_image = post.mediaid
+            envName = 'LAST_IMAGE_ID_' + self.username
+            os.environ[envName] = str(self.last_image)
 
         if scraper.is_login:
             # Story
             storyItem = scraper.get_last_storyItem()
             if storyItem is not None and str(storyItem.mediaid) != str(self.last_story):
-                with open(Path(__file__).resolve().parent.parent / ('last_story_'+self.username), 'w') as f:
-                    f.write(str(storyItem.mediaid))
-
                 profile = storyItem.owner_profile
                 embed = self.__create_embed(storyItem)
-                print(f'New story found\n{profile.username} : {storyItem.mediaid}')
+                print(
+                    f'New story found\n{profile.username} : {storyItem.mediaid}')
                 self.webhook.send(f'https://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
-                                embed,
-                                avatar_url=profile.profile_pic_url)
+                                  embed,
+                                  avatar_url=profile.profile_pic_url)
                 self.last_story = storyItem.mediaid
+                envName = 'LAST_STORY_ID_' + self.username
+                os.environ[envName] = str(self.last_story)
 
     @staticmethod
     def __create_embed(item: Post | StoryItem) -> Embed:
