@@ -15,6 +15,7 @@ class Loop:
         self.username = username
         self.last_image = last_image
         self.last_story = last_story
+        self.content = config.content
         self.login_username = config.login_username
         self.login_password = config.login_password
 
@@ -28,7 +29,7 @@ class Loop:
             profile = post.owner_profile
             embed = self.__create_embed(post)
             print(f'New post found\n{profile.username} : {post.mediaid}')
-            self.webhook.send(f'https://www.instagram.com/p/{post.shortcode}',
+            self.webhook.send(f'{self.content}\nhttps://www.instagram.com/p/{post.shortcode}',
                               embed,
                               avatar_url=profile.profile_pic_url)
             self.last_image = post.mediaid
@@ -43,7 +44,7 @@ class Loop:
                 embed = self.__create_embed(storyItem)
                 print(
                     f'New story found\n{profile.username} : {storyItem.mediaid}')
-                self.webhook.send(f'https://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
+                self.webhook.send(f'{self.content}\nhttps://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
                                   embed,
                                   avatar_url=profile.profile_pic_url)
                 self.last_story = storyItem.mediaid
@@ -62,7 +63,8 @@ class Loop:
         embed.color = 0xEC054C
         embed.set_image(item.url)
         embed.set_timestamp(time=item.date_utc)
-        embed.set_author(name=profile.username, icon_url=profile.profile_pic_url,
+        embed.set_author(name=profile.username,# icon_url=profile.profile_pic_url,
                          url=f'https://www.instagram.com/{profile.username}')
+        embed.set_thumbnail(profile.profile_pic_url)
 
         return embed

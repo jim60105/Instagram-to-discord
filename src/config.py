@@ -21,6 +21,10 @@ class Config:
         return self.data['delay']
 
     @property
+    def content(self) -> str:
+        return self.data['content']
+
+    @property
     def login_username(self) -> str:
         return self.data['login_username']
 

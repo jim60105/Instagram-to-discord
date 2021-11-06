@@ -4,3 +4,7 @@ users: []
 delay: 600
 login_username: ''
 login_password: ''
+
+# Use this to write custom messages and mention
+# example: <@&role_id>
+content: '' 
