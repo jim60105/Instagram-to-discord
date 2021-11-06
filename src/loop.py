@@ -36,26 +36,27 @@ class Loop:
                               avatar_url=profile.profile_pic_url)
             self.last_image = post.mediaid
 
-        # Story
-        storyItem = scraper.get_last_storyItem()
-        if storyItem is not None and str(storyItem.mediaid) != str(self.last_story):
-            with open(Path(__file__).resolve().parent.parent / ('last_story_'+self.username), 'w') as f:
-                f.write(str(storyItem.mediaid))
+        if scraper.is_login:
+            # Story
+            storyItem = scraper.get_last_storyItem()
+            if storyItem is not None and str(storyItem.mediaid) != str(self.last_story):
+                with open(Path(__file__).resolve().parent.parent / ('last_story_'+self.username), 'w') as f:
+                    f.write(str(storyItem.mediaid))
 
-            profile = storyItem.owner_profile
-            embed = self.__create_embed(storyItem)
-            print(f'New story found\n{profile.username} : {storyItem.mediaid}')
-            self.webhook.send(f'https://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
-                              embed,
-                              avatar_url=profile.profile_pic_url)
-            self.last_story = storyItem.mediaid
+                profile = storyItem.owner_profile
+                embed = self.__create_embed(storyItem)
+                print(f'New story found\n{profile.username} : {storyItem.mediaid}')
+                self.webhook.send(f'https://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
+                                embed,
+                                avatar_url=profile.profile_pic_url)
+                self.last_story = storyItem.mediaid
 
     @staticmethod
     def __create_embed(item: Post | StoryItem) -> Embed:
         profile = item.owner_profile
         embed = Embed()
 
-        if item is Post:
+        if type(item) is Post:
             embed.description = item.caption
             embed.set_footer(f'❤️ {item.likes} | 💬 {item.comments}')
 

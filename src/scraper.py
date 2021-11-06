@@ -5,19 +5,26 @@ import requests
 import time
 from instaloader import instaloader, Post, Profile, NodeIterator
 
+L: instaloader.Instaloader = instaloader.Instaloader()
+
 
 class Scraper:
-    def __init__(self, username: str, login_username: str, login_password: str):
-        self.L = instaloader.Instaloader()
+    is_login: bool = 0
 
-        if login_username and login_password:
-            self.L.login(login_username, login_password)
+    def __init__(self, username: str, login_username: str, login_password: str):
+
+        self.is_login = L.test_login() is not None
+        if login_username and login_password and self.is_login is None:
+            try:
+                L.login(login_username, login_password)
+            finally:
+                self.is_login = L.test_login() is not None
 
         self.profile = self.__get_profile(username)
 
     def __get_profile(self, username: str) -> Profile:
         try:
-            return Profile.from_username(self.L.context, username)
+            return Profile.from_username(L.context, username)
         except requests.exceptions.ConnectionError:
             time.sleep(10)
             return Scraper.__get_profile(username)
@@ -33,12 +40,16 @@ class Scraper:
         return self.profile
 
     def get_last_storyItem(self) -> StoryItem | NoneType:
-        stories_item = next(self.get_stories(), None).get_items()
-        if stories_item is None:
+        if not self.is_login:
             return None
-        else:
-            return next(stories_item, None)
+
+        story = next(self.get_stories(), None)
+        if story is not None:
+            return next(story.get_items(), None)
+        return None
 
     def get_stories(self) -> Iterator[Story]:
-        stories = self.L.get_stories([self.profile.userid])
-        return stories
+        if self.is_login:
+            return L.get_stories([self.profile.userid])
+        else:
+            return None
