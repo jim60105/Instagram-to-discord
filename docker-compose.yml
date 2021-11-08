@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   instagram-to-discord:
-    image: ghcr.io/jim60105/instagram-to-discord
+    image: ghcr.io/jim60105/docker-instagram-to-discord
     # build: .
     restart: always
     volumes:
