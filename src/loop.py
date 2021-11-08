@@ -18,13 +18,13 @@ class Loop:
         self.content = config.content
         self.login_username = config.login_username
         self.login_password = config.login_password
-
-    def run(self):
-        scraper = Scraper(self.username,
+        self.scraper = Scraper(self.username,
                           self.login_username, self.login_password)
 
+
+    def run(self):
         # Post
-        post = scraper.get_last_post()
+        post = self.scraper.get_last_post()
         if post is not None and str(post.mediaid) != str(self.last_image):
             profile = post.owner_profile
             embed = self.__create_embed(post)
@@ -36,9 +36,9 @@ class Loop:
             envName = 'LAST_IMAGE_ID_' + self.username
             os.environ[envName] = str(self.last_image)
 
-        if scraper.is_login:
+        if self.scraper.is_login:
             # Story
-            storyItem = scraper.get_last_storyItem()
+            storyItem = self.scraper.get_last_storyItem()
             if storyItem is not None and str(storyItem.mediaid) != str(self.last_story):
                 profile = storyItem.owner_profile
                 embed = self.__create_embed(storyItem)
