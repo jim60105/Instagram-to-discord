@@ -34,4 +34,4 @@ class Config:
 
     @property
     def skip_first_run(self) -> bool:
-        return hasattr(self.data, 'skip_first_run') and self.data['skip_first_run'] == 'true'
+        return 'skip_first_run' in self.data and self.data['skip_first_run'] == 'true'

@@ -79,17 +79,16 @@ class Loop:
         return File(file, filename)
 
     def __do_first_run(self) -> bool:
-        if os.environ['FIRST_RUN'] == 'false':
-            self.first_run = 0
+        if os.getenv('FIRST_RUN', 'true') == 'false':
+            self.first_run = False
             return
 
         post = self.scraper.get_last_post()
-        if post is Post:
+        if post is not None:
             os.environ['LAST_IMAGE_ID_' + self.username] = str(post.mediaid)
         storyItem = self.scraper.get_last_storyItem()
-        if storyItem is StoryItem:
-            os.environ['LAST_STORY_ID_' +
-                       self.username] = str(storyItem.mediaid)
+        if storyItem is not None:
+            os.environ['LAST_STORY_ID_' + self.username] = str(storyItem.mediaid)
         print(f'SKIP FIRST RUN!')
-        self.first_run = 0
+        self.first_run = False
         os.environ['FIRST_RUN'] = 'false'
