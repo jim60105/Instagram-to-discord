@@ -46,7 +46,7 @@ class Loop:
                                   avatar_url=profile.profile_pic_url)
             os.environ[envName] = str(post.mediaid)
 
-        if self.scraper.is_login:
+        if self.scraper.should_login:
             # Story
             envName = 'LAST_STORY_ID_' + self.username
             last_story = os.getenv(envName)

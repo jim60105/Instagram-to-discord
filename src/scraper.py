@@ -12,7 +12,9 @@ class Scraper:
         if login_username and login_password:
             self.login_username = login_username
             self.login_password = login_password
-            self.__login()
+            self.should_login = self.__login()
+        else:
+            self.should_login = False
 
         self.profile = self.__get_profile(username)
 
@@ -23,17 +25,20 @@ class Scraper:
             time.sleep(10)
             return Scraper.__get_profile(username)
 
-    def __login(self):
-        self.L.login(self.login_username, self.login_password)
+    def __login(self) -> bool:
+        logined = False
         try:
-            self.is_login = self.L.test_login() is not None
+            if self.login_username and self.login_password:
+                self.L.login(self.login_username, self.login_password)
+                logined = self.L.test_login() is not None
         except instaloader.BadResponseException:
             print(f'BadResponceException: This happens when your account is blocked by Instagram. Log in to the app to check what happened.')
         finally:
-            if self.is_login:
+            if logined:
                 print(f'Login as {self.login_username}')
             else:
                 print('Login failed')
+            return logined
 
     def get_last_post(self) -> Post | NoneType:
         return next(self.get_posts(), None)
@@ -46,17 +51,16 @@ class Scraper:
         return self.profile
 
     def get_last_storyItem(self) -> StoryItem | NoneType:
-        if not self.L.test_login():
-            self.__login()
+        if not self.should_login:
+            return None
+        elif not self.L.test_login():
+            if not self.__login():
+                return None
 
-        if self.is_login:
-            story = next(self.get_stories(), None)
-            if story is not None:
-                return next(story.get_items(), None)
+        story = next(self.get_stories(), None)
+        if story is not None:
+            return next(story.get_items(), None)
         return None
 
     def get_stories(self) -> Iterator[Story]:
-        if self.is_login:
-            return self.L.get_stories([self.profile.userid])
-        else:
-            return None
+        return self.L.get_stories([self.profile.userid])
