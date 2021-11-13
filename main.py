@@ -1,10 +1,7 @@
 import time
-import os
-
-from dhooks.client import Webhook
-
 from src.config import Config
 from src.loop import Loop
+
 
 if __name__ == "__main__":
     config = Config()
@@ -15,10 +12,7 @@ if __name__ == "__main__":
 
     users = []
     for u in config.users:
-        last_image = os.getenv('LAST_IMAGE_ID_' + u)
-        last_story = os.getenv('LAST_STORY_ID_' + u)
-
-        users.append(Loop(config, u, last_image, last_story))
+        users.append(Loop(config, u))
 
     while True:
         for user in users:

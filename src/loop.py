@@ -12,18 +12,14 @@ from src.scraper import Scraper
 
 
 class Loop:
-    def __init__(self, config: Config, username: str,
-                 last_image: str | NoneType, last_story: str | NoneType):
+    def __init__(self, config: Config, username: str):
         self.webhook = Webhook(config.webhook_url)
         self.username = username
-        self.last_image = last_image
-        self.last_story = last_story
         self.content = config.content
         self.login_username = config.login_username
         self.login_password = config.login_password
         self.scraper = Scraper(self.username,
-                          self.login_username, self.login_password)
-
+                               self.login_username, self.login_password)
         self.first_run = config.skip_first_run
 
     def run(self):
@@ -32,48 +28,56 @@ class Loop:
             return
 
         # Post
+        envName = 'LAST_IMAGE_ID_' + self.username
+        last_image = os.getenv(envName)
         post = self.scraper.get_last_post()
-        if post is not None and str(post.mediaid) != str(self.last_image):
+        if post is not None and str(post.mediaid) != str(last_image):
             profile = post.owner_profile
-            embed = self.__create_embed(post)
             print(f'New post found\n{profile.username} : {post.mediaid}')
-            self.webhook.send(f'{self.content}\nhttps://www.instagram.com/p/{post.shortcode}',
-                              embed,
-                              avatar_url=profile.profile_pic_url)
-            self.last_image = post.mediaid
-            envName = 'LAST_IMAGE_ID_' + self.username
-            os.environ[envName] = str(self.last_image)
+            with NamedTemporaryFile() as temp:
+                file = self.__create_File(post, temp)
+                self.webhook.send(f'{self.content}\n{post.caption}\nhttps://www.instagram.com/p/{post.shortcode}'
+                                  if self.content != ''
+                                  else f'{post.caption}\nhttps://www.instagram.com/p/{post.shortcode}',
+                                  file=file,
+                                  username=f'[Instagram] {profile.full_name} ({profile.username})'
+                                  if profile.full_name != profile.username
+                                  else f'[Instagram] {profile.full_name}',
+                                  avatar_url=profile.profile_pic_url)
+            os.environ[envName] = str(post.mediaid)
 
         if self.scraper.is_login:
             # Story
+            envName = 'LAST_STORY_ID_' + self.username
+            last_story = os.getenv(envName)
             storyItem = self.scraper.get_last_storyItem()
-            if storyItem is not None and str(storyItem.mediaid) != str(self.last_story):
+            if storyItem is not None and str(storyItem.mediaid) != str(last_story):
                 profile = storyItem.owner_profile
-                embed = self.__create_embed(storyItem)
                 print(
                     f'New story found\n{profile.username} : {storyItem.mediaid}')
-                self.webhook.send(f'{self.content}\nhttps://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
-                                  embed,
-                                  avatar_url=profile.profile_pic_url)
-                self.last_story = storyItem.mediaid
-                envName = 'LAST_STORY_ID_' + self.username
-                os.environ[envName] = str(self.last_story)
+                with NamedTemporaryFile() as temp:
+                    file = self.__create_File(storyItem, temp)
+                    self.webhook.send(f'{self.content}\nhttps://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/'
+                                      if self.content != ''
+                                      else f'https://www.instagram.com/stories/{profile.username}/{storyItem.mediaid}/',
+                                      file=file,
+                                      username=f'[Instagram] {profile.full_name} ({profile.username})'
+                                      if profile.full_name != profile.username
+                                      else f'[Instagram] {profile.full_name}',
+                                      avatar_url=profile.profile_pic_url)
+                os.environ[envName] = str(storyItem.mediaid)
 
     @staticmethod
-    def __create_embed(item: Post | StoryItem) -> Embed:
-        profile = item.owner_profile
-        embed = Embed()
+    def __create_File(item: Post | StoryItem, file: Any) -> File:
+        url = item.video_url if item.is_video else item.url
 
-        if type(item) is Post:
-            embed.description = item.caption
-            embed.set_footer(f'❤️ {item.likes} | 💬 {item.comments}')
+        file.write(requests.get(url).content)
+        path = urlparse(url).path
+        file.flush()
+        file.seek(0)
+        filename = os.path.basename(path)
+        return File(file, filename)
 
-        embed.color = 0xEC054C
-        embed.set_image(item.url)
-        embed.set_timestamp(time=item.date_utc)
-        embed.set_author(name=profile.username,# icon_url=profile.profile_pic_url,
-                         url=f'https://www.instagram.com/{profile.username}')
-        embed.set_thumbnail(profile.profile_pic_url)
     def __do_first_run(self) -> bool:
         if os.environ['FIRST_RUN'] == 'false':
             self.first_run = 0
