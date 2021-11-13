@@ -1,6 +1,9 @@
 import os
-from types import NoneType
-from dhooks import Webhook, Embed
+import requests
+from typing import Any
+from urllib.parse import urlparse
+from tempfile import NamedTemporaryFile
+from dhooks import Webhook, File
 from instaloader import Post
 from instaloader.structures import StoryItem
 
@@ -21,8 +24,13 @@ class Loop:
         self.scraper = Scraper(self.username,
                           self.login_username, self.login_password)
 
+        self.first_run = config.skip_first_run
 
     def run(self):
+        if self.first_run:
+            self.__do_first_run()
+            return
+
         # Post
         post = self.scraper.get_last_post()
         if post is not None and str(post.mediaid) != str(self.last_image):
@@ -66,5 +74,18 @@ class Loop:
         embed.set_author(name=profile.username,# icon_url=profile.profile_pic_url,
                          url=f'https://www.instagram.com/{profile.username}')
         embed.set_thumbnail(profile.profile_pic_url)
+    def __do_first_run(self) -> bool:
+        if os.environ['FIRST_RUN'] == 'false':
+            self.first_run = 0
+            return
 
-        return embed
+        post = self.scraper.get_last_post()
+        if post is Post:
+            os.environ['LAST_IMAGE_ID_' + self.username] = str(post.mediaid)
+        storyItem = self.scraper.get_last_storyItem()
+        if storyItem is StoryItem:
+            os.environ['LAST_STORY_ID_' +
+                       self.username] = str(storyItem.mediaid)
+        print(f'SKIP FIRST RUN!')
+        self.first_run = 0
+        os.environ['FIRST_RUN'] = 'false'

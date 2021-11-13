@@ -31,3 +31,7 @@ class Config:
     @property
     def login_password(self) -> str:
         return self.data['login_password']
+
+    @property
+    def skip_first_run(self) -> bool:
+        return hasattr(self.data, 'skip_first_run') and self.data['skip_first_run'] == 'true'
