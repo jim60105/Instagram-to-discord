@@ -2,7 +2,7 @@
 from instaloader import instaloader
 
 
-class loader(instaloader.Instaloader):
+class Loader(instaloader.Instaloader):
     def __init__(self, username, password):
         self.username = username
         self.password = password

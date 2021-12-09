@@ -2,7 +2,7 @@ import time
 
 from src.config import Config
 from src.loop import Loop
-from src.loader import loader
+from src.loader import Loader
 
 
 if __name__ == "__main__":
@@ -12,7 +12,7 @@ if __name__ == "__main__":
         print('Please set the config file properly!')
         exit()
         
-    L = loader(config.login_username, config.login_password)
+    L = Loader(config.login_username, config.login_password)
 
     loops = []
     for username in config.users:

@@ -1,15 +1,15 @@
-from types import NoneType
-from typing import Iterator
-from instaloader.structures import Story, StoryItem
 import requests
 import time
+from types import NoneType
+from typing import Iterator
 from instaloader import Post, Profile, NodeIterator
+from instaloader.structures import Story, StoryItem
 
-from loader import loader
+from src.loader import Loader
 
 
 class Scraper:
-    def __init__(self, username: str, loader: loader):
+    def __init__(self, username: str, loader: Loader):
         self.loader = loader
 
         self.profile = self.__get_profile(username)

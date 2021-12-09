@@ -9,11 +9,11 @@ from instaloader.structures import StoryItem
 
 from src.config import Config
 from src.scraper import Scraper
-from src.loader import loader
+from src.loader import Loader
 
 
 class Loop:
-    def __init__(self, config: Config, username: str, loader:loader):
+    def __init__(self, config: Config, username: str, loader:Loader):
         self.webhook = Webhook(config.webhook_url)
         self.username = username
         self.content = config.content
