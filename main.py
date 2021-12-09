@@ -1,6 +1,8 @@
 import time
+
 from src.config import Config
 from src.loop import Loop
+from src.loader import loader
 
 
 if __name__ == "__main__":
@@ -9,12 +11,14 @@ if __name__ == "__main__":
     if len(config.users) == 0 or not config.webhook_url:
         print('Please set the config file properly!')
         exit()
+        
+    L = loader(config.login_username, config.login_password)
 
-    users = []
-    for u in config.users:
-        users.append(Loop(config, u))
+    loops = []
+    for username in config.users:
+        loops.append(Loop(config, username, L))
 
     while True:
-        for user in users:
-            user.run()
+        for loop in loops:
+            loop.run()
         time.sleep(config.delay or 600)

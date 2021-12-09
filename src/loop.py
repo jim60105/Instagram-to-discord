@@ -9,24 +9,20 @@ from instaloader.structures import StoryItem
 
 from src.config import Config
 from src.scraper import Scraper
+from src.loader import loader
 
 
 class Loop:
-    def __init__(self, config: Config, username: str):
+    def __init__(self, config: Config, username: str, loader:loader):
         self.webhook = Webhook(config.webhook_url)
         self.username = username
         self.content = config.content
-        self.login_username = config.login_username
-        self.login_password = config.login_password
-        self.scraper = Scraper(self.username,
-                               self.login_username, self.login_password)
-        self.first_run = config.skip_first_run
+        self.loader = loader
+        self.scraper = Scraper(username, loader)
+        if os.getenv('FIRST_RUN') != 'true' or config.skip_first_run:
+            self.__do_skip_first_run()
 
     def run(self):
-        if self.first_run:
-            self.__do_first_run()
-            return
-
         # Post
         envName = 'LAST_IMAGE_ID_' + self.username
         last_image = os.getenv(envName)
@@ -46,7 +42,7 @@ class Loop:
                                   avatar_url=profile.profile_pic_url)
             os.environ[envName] = str(post.mediaid)
 
-        if self.scraper.should_login:
+        if self.loader.should_login:
             # Story
             envName = 'LAST_STORY_ID_' + self.username
             last_story = os.getenv(envName)
@@ -78,11 +74,7 @@ class Loop:
         filename = os.path.basename(path)
         return File(file, filename)
 
-    def __do_first_run(self) -> bool:
-        if os.getenv('FIRST_RUN', 'true') == 'false':
-            self.first_run = False
-            return
-
+    def __do_skip_first_run(self):
         post = self.scraper.get_last_post()
         if post is not None:
             os.environ['LAST_IMAGE_ID_' + self.username] = str(post.mediaid)
@@ -90,5 +82,4 @@ class Loop:
         if storyItem is not None:
             os.environ['LAST_STORY_ID_' + self.username] = str(storyItem.mediaid)
         print(f'SKIP FIRST RUN!')
-        self.first_run = False
         os.environ['FIRST_RUN'] = 'false'
