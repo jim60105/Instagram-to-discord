@@ -1,3 +1,4 @@
+from instaloader.exceptions import LoginRequiredException
 import requests
 import time
 from types import NoneType
@@ -35,10 +36,12 @@ class Scraper:
         if not self.loader.should_login:
             return None
 
-        if self.loader.test_login() is None:
+        try:
+            story = next(self.get_stories(), None)
+        except LoginRequiredException:
             self.loader.login()
-
-        story = next(self.get_stories(), None)
+            story = next(self.get_stories(), None)
+    
         if story is not None:
             return next(story.get_items(), None)
         return None
