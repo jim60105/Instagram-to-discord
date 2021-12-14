@@ -7,6 +7,7 @@ class Loader(instaloader.Instaloader):
         super().__init__()
         self.username = username
         self.password = password
+        self.should_login = False
         if username and password:
             self.should_login = self.login()
 
