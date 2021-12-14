@@ -32,6 +32,12 @@ class Scraper:
         return self.__get_profile(self.username)
 
     def get_last_storyItem(self) -> StoryItem | NoneType:
+        story = self.get_last_story()
+        if story is not None:
+            return next(story.get_items(), None)
+        return None
+
+    def get_last_story(self) -> Story | NoneType:
         if not self.loader.should_login:
             return None
 
@@ -40,10 +46,8 @@ class Scraper:
         except LoginRequiredException:
             self.loader.login()
             story = next(self.get_stories(), None)
-    
-        if story is not None:
-            return next(story.get_items(), None)
-        return None
+
+        return story
 
     def get_stories(self) -> Iterator[Story]:
         return self.loader.get_stories([self.__get_profile(self.username).userid])

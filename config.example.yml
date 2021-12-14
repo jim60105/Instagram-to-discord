@@ -5,10 +5,6 @@ delay: 600
 login_username: ''
 login_password: ''
 
-# The last post will not be posted when the program starts.
-# Comment out this line if you don't need this feature.
-skip_first_run: 'true'
-
 # Use this to write custom messages and mention.
 # example: <@&role_id>
 content: '' 

@@ -7,7 +7,11 @@ services:
     restart: always
     volumes:
       - ./config.yml:/usr/src/app/config.yml:ro
+      - db:/usr/src/app/db
     # logging:
     #   driver: "gelf"
     #   options:
     #     gelf-address: "udp://127.0.0.1:12201"
+
+volumes:
+  db:

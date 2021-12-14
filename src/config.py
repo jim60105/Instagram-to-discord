@@ -31,7 +31,3 @@ class Config:
     @property
     def login_password(self) -> str:
         return self.data['login_password']
-
-    @property
-    def skip_first_run(self) -> bool:
-        return 'skip_first_run' in self.data and self.data['skip_first_run'] == 'true'
