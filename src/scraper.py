@@ -12,8 +12,7 @@ from src.loader import Loader
 class Scraper:
     def __init__(self, username: str, loader: Loader):
         self.loader = loader
-
-        self.profile = self.__get_profile(username)
+        self.username = username
 
     def __get_profile(self, username: str) -> Profile:
         try:
@@ -26,11 +25,11 @@ class Scraper:
         return next(self.get_posts(), None)
 
     def get_posts(self) -> NodeIterator[Post]:
-        post = self.profile.get_posts()
+        post = self.__get_profile(self.username).get_posts()
         return post
 
     def get_profile(self) -> Profile:
-        return self.profile
+        return self.__get_profile(self.username)
 
     def get_last_storyItem(self) -> StoryItem | NoneType:
         if not self.loader.should_login:
@@ -47,4 +46,4 @@ class Scraper:
         return None
 
     def get_stories(self) -> Iterator[Story]:
-        return self.loader.get_stories([self.profile.userid])
+        return self.loader.get_stories([self.__get_profile(self.username).userid])
