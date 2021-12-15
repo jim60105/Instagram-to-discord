@@ -1,4 +1,5 @@
 import time
+from typing import List
 
 from src.db import DB
 from src.config import Config
@@ -19,12 +20,13 @@ if __name__ == "__main__":
 
     print('Project start!')
 
-    loops = []
+    loops: List[Loop] = []
     for username in config.users:
         print(f'Add monitor: {username}')
         loops.append(Loop(config, username, L))
 
+    print(f'Complete initialization. Start monitoring...')
     while True:
+        time.sleep(config.delay or 600)
         for loop in loops:
             loop.run()
-        time.sleep(config.delay or 600)
