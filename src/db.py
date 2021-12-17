@@ -61,7 +61,7 @@ class DB:
                     InstagramLogs
                 WHERE
                     OwnerId = ?''',
-            (int(owner_id)))
+            (int(owner_id),))
         return cursor.fetchone() == 0
 
     def __exit__(self, exc_type, exc_value, traceback):
