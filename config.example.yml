@@ -1,10 +1,22 @@
 ---
+# Discord webhook url
 webhook_url: ''
-users: []
-delay: 600
-login_username: ''
-login_password: ''
 
 # Use this to write custom messages and mention.
 # example: <@&role_id>
 content: '' 
+
+# Instagram username and password.
+# Used for getting stories.
+# Leave it blank if you only want posts.
+login_username: ''
+login_password: ''
+
+# Users to monitor, Instagram username
+# String array
+users: []
+
+# The interval seconds between each checking.
+# Once five minutes is almost safe, but there is no guarantee.
+# You will get blocked with 429 if you set this too small.
+delay: 300
