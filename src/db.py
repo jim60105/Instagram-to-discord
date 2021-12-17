@@ -52,5 +52,17 @@ class DB:
             (int(owner_id), int(mediaid)))
         return cursor.fetchone()
 
+    def is_empty(self, owner_id) -> bool:
+        cursor = self.conn.cursor()
+        cursor.execute(
+            '''SELECT
+                    COUNT(*)
+                FROM
+                    InstagramLogs
+                WHERE
+                    OwnerId = ?''',
+            (int(owner_id)))
+        return cursor.fetchone() == 0
+
     def __exit__(self, exc_type, exc_value, traceback):
         self.conn.close()

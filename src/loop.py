@@ -83,6 +83,11 @@ class Loop:
 
     def __log_to_db_onInit(self):
         with DB(readonly=False) as db:
+            if not db.is_empty(self.scraper.profile.userid):
+                print(f'Database is not empty on user {self.scraper.profile.username}')
+                print(f'Skip log old content to database.')
+                return
+
             post = self.scraper.get_last_post()
             if post is not None:
                 db.insert(post.owner_id, post.mediaid)
