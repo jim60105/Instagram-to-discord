@@ -27,6 +27,6 @@ if __name__ == "__main__":
 
     print(f'Complete initialization. Start monitoring...')
     while True:
-        time.sleep(config.delay or 600)
         for loop in loops:
+            time.sleep(config.delay or 300)
             loop.run()
