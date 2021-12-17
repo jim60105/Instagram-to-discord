@@ -3,7 +3,7 @@ import requests
 import time
 from types import NoneType
 from typing import Iterator
-from instaloader import Post, Profile, NodeIterator
+from instaloader import Post, Profile, NodeIterator, instaloader
 from instaloader.structures import Story, StoryItem
 
 from src.loader import Loader
@@ -12,24 +12,27 @@ from src.loader import Loader
 class Scraper:
     def __init__(self, username: str, loader: Loader):
         self.loader = loader
+        self.username = username
+        self.profile = self.__get_profile()
 
-        self.profile = self.__get_profile(username)
-
-    def __get_profile(self, username: str) -> Profile:
+    def __get_profile(self) -> Profile:
         try:
-            return Profile.from_username(self.loader.context, username)
+            # Use a new loader to get posts that do not require login.
+            self.profile = Profile.from_username(instaloader.Instaloader().context, self.username)
+            return self.profile
         except requests.exceptions.ConnectionError:
             time.sleep(10)
-            return self.__get_profile(username)
+            return self.__get_profile()
 
     def get_last_post(self) -> Post | NoneType:
         return next(self.get_posts(), None)
 
     def get_posts(self) -> NodeIterator[Post]:
-        post = self.profile.get_posts()
-        return post
+        return self.__get_profile().get_posts()
 
     def get_profile(self) -> Profile:
+        if not self.profile:
+            self.__get_profile()
         return self.profile
 
     def get_last_storyItem(self) -> StoryItem | NoneType:
