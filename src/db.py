@@ -50,19 +50,23 @@ class DB:
                         AND MediaId = ?
                     )''',
             (int(owner_id), int(mediaid)))
-        return cursor.fetchone()
+        result = cursor.fetchone()
+        return result[0]
 
-    def is_empty(self, owner_id) -> bool:
+    def get_exist(self, owner_id) -> bool:
         cursor = self.conn.cursor()
         cursor.execute(
-            '''SELECT
-                    COUNT(*)
-                FROM
-                    InstagramLogs
-                WHERE
-                    OwnerId = ?''',
+            ''' SELECT EXISTS
+                    (SELECT
+                        1
+                    FROM
+                        InstagramLogs
+                    WHERE
+                        OwnerId = ?
+                    )''',
             (int(owner_id),))
-        return cursor.fetchone() == 0
+        result = cursor.fetchone()
+        return result[0]
 
     def __exit__(self, exc_type, exc_value, traceback):
         self.conn.close()

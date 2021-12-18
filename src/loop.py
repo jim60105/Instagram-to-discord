@@ -83,7 +83,7 @@ class Loop:
 
     def __log_to_db_onInit(self):
         with DB(readonly=False) as db:
-            if not db.is_empty(self.scraper.get_profile().userid):
+            if db.get_exist(self.scraper.get_profile().userid):
                 print(f'Database is not empty on user {self.username}')
                 print(f'Skip log old content to database.')
                 return
