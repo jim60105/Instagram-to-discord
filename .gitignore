@@ -138,5 +138,5 @@ dmypy.json
 cython_debug/
 
 config.yml
-.vscode
+.vscode/settings.json
 *.sqlite
