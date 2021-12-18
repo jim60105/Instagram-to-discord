@@ -37,34 +37,29 @@ class DB:
             (int(owner_id), int(mediaid)))
         self.conn.commit()
 
-    def get_exist(self, owner_id, mediaid) -> bool:
+    def get_exist(self, owner_id, mediaid=None) -> bool:
         cursor = self.conn.cursor()
-        cursor.execute(
-            '''SELECT EXISTS
+        sql = '''SELECT EXISTS
                     (SELECT
                         1
                     FROM
                         InstagramLogs
                     WHERE
                         OwnerId = ?
-                        AND MediaId = ?
-                    )''',
-            (int(owner_id), int(mediaid)))
-        result = cursor.fetchone()
-        return result[0]
+            '''
 
-    def get_exist(self, owner_id) -> bool:
-        cursor = self.conn.cursor()
-        cursor.execute(
-            ''' SELECT EXISTS
-                    (SELECT
-                        1
-                    FROM
-                        InstagramLogs
-                    WHERE
-                        OwnerId = ?
-                    )''',
-            (int(owner_id),))
+        if mediaid:
+            sql += ' AND MediaId = ? '
+            sql += ' );'
+            cursor.execute(
+                sql,
+                (int(owner_id), int(mediaid)))
+        else:
+            sql += ' );'
+            cursor.execute(
+                sql,
+                (int(owner_id),))
+
         result = cursor.fetchone()
         return result[0]
 
