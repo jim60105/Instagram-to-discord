@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 from tempfile import NamedTemporaryFile
 from dhooks import Webhook, File
 from instaloader import Post
-from instaloader.structures import StoryItem
+from instaloader.structures import PostSidecarNode, StoryItem
 
 from src.db import DB
 from src.config import Config
@@ -41,6 +41,14 @@ class Loop:
                                       if profile.full_name != profile.username
                                       else f'[Instagram] {profile.full_name}',
                                       avatar_url=profile.profile_pic_url)
+                if post.typename == 'GraphSidecar' and post.mediacount > 1:
+                    postSidecarNode = post.get_sidecar_nodes(1)
+                    node = next(postSidecarNode, None)
+                    while node is not None:
+                        with NamedTemporaryFile() as temp:
+                            file = self.__create_File(node, temp)
+                            self.webhook.send(file=file)
+                        node = next(postSidecarNode, None)
                 DB(readonly=False).insert(post.owner_id, post.mediaid)
                 post = next(posts, None)
 
@@ -71,8 +79,13 @@ class Loop:
                     storyItem = next(storyItems, None)
 
     @staticmethod
-    def __create_File(item: Post | StoryItem, file: Any) -> File:
-        url = item.video_url if item.is_video else item.url
+    def __create_File(item: Post | StoryItem | PostSidecarNode, file: Any) -> File:
+        if item.is_video:
+            url = item.video_url
+        elif type(item) is PostSidecarNode:
+            url = item.display_url
+        else:
+            url = item.url
 
         file.write(requests.get(url).content)
         path = urlparse(url).path
