@@ -17,7 +17,7 @@ class Loader(instaloader.Instaloader):
                 isLogin = True
         except instaloader.BadResponseException as e:
             print(e, file=sys.stderr)
-            print(f'BadResponceException: This happens when your account is blocked by Instagram. Login from your mobile phone app to check what happened.', file=sys.stderr)
+            print(f'BadResponseException: This happens when your account is blocked by Instagram. Login from your mobile phone app to check what happened.', file=sys.stderr)
         except instaloader.ConnectionException as e:
             print(e, file=sys.stderr)
             print(f'If you get 429, DO NOT login the account {self.username} from multiple instances at the same time. Neither from this program, nor from your mobile phone or PC.', file=sys.stderr)
