@@ -1,4 +1,5 @@
 from instaloader.exceptions import LoginRequiredException
+import sys
 import requests
 import time
 from types import NoneType
@@ -17,12 +18,16 @@ class Scraper:
 
     def __get_profile(self) -> Profile:
         try:
-            # Use a new loader to get posts that do not require login.
-            self.profile = Profile.from_username(instaloader.Instaloader().context, self.username)
+            self.profile = Profile.from_username(
+                self.loader.context, self.username)
             return self.profile
         except requests.exceptions.ConnectionError:
             time.sleep(10)
             return self.__get_profile()
+        except instaloader.LoginRequiredException as e:
+            print(e, file=sys.stderr)
+            print(f'Instagram requires login when fetching the profile. This sometimes happens, not sure how often.', file=sys.stderr)
+            return self.profile
 
     def get_last_post(self) -> Post | NoneType:
         return next(self.get_posts(), None)
